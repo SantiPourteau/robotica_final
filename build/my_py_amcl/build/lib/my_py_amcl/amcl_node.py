@@ -19,8 +19,9 @@ import math
 class State(Enum):
     IDLE = 0
     PLANNING = 1
-    NAVIGATING = 2
-    AVOIDING_OBSTACLE = 3
+    INITIAL_POSITIONING = 2
+    NAVIGATING = 3
+    AVOIDING_OBSTACLE = 4
 
 class AmclNode(Node):
     def __init__(self):
@@ -60,6 +61,10 @@ class AmclNode(Node):
         self.declare_parameter('min_lookahead_distance', 0.1)
         self.declare_parameter('max_lookahead_distance', 0.5)
         
+        # --- Initial Positioning Parameters ---
+        self.declare_parameter('initial_positioning_angular_speed', 0.3)
+        self.declare_parameter('initial_positioning_tolerance', 0.075)
+        
         self.num_particles = self.get_parameter('num_particles').value
         self.odom_frame_id = self.get_parameter('odom_frame_id').value
         self.base_frame_id = self.get_parameter('base_frame_id').value
@@ -88,6 +93,10 @@ class AmclNode(Node):
         self.min_lookahead_distance = self.get_parameter('min_lookahead_distance').value
         self.max_lookahead_distance = self.get_parameter('max_lookahead_distance').value
         
+        # --- Initial Positioning Parameters ---
+        self.initial_positioning_angular_speed = self.get_parameter('initial_positioning_angular_speed').value
+        self.initial_positioning_tolerance = self.get_parameter('initial_positioning_tolerance').value
+        
         # --- State ---
         self.particles = np.zeros((self.num_particles, 3))
         self.weights = np.ones(self.num_particles) / self.num_particles
@@ -105,6 +114,9 @@ class AmclNode(Node):
         self.obstacle_avoidance_cumulative_angle = 0.0
         self.obstacle_avoidance_active = False
         self.distance_map = None
+        
+        # Variables for initial positioning
+        self.target_orientation = None
         
         # Variables para suavizar el control
         self.last_angular_cmd = 0.0
@@ -157,6 +169,7 @@ class AmclNode(Node):
         self.get_logger().info(f"New goal received: ({self.goal_pose.position.x:.2f}, {self.goal_pose.position.y:.2f}). State -> PLANNING")
         self.state = State.PLANNING
         self.current_path = None
+        self.target_orientation = None  # Reset target orientation for new goal
         
     def plan_path(self, start, goal):
         """  A* path planning algorithm to find a path from start to goal in the occupancy grid. """
@@ -268,6 +281,33 @@ class AmclNode(Node):
         # Clamp to valid range
         return np.clip(base_lookahead, self.min_lookahead_distance, self.max_lookahead_distance)
 
+    def calculate_target_orientation(self, current_pose):
+        """ Calculate the target orientation based on the first segment of the path. """
+        if not self.current_path or len(self.current_path.poses) < 2:
+            return None
+        
+        # Get current robot position
+        robot_x = current_pose.position.x
+        robot_y = current_pose.position.y
+        
+        # Find the first target point (could be the first point or a point ahead)
+        # For initial positioning, we'll use the first point in the path
+        target_pose = self.current_path.poses[0].pose
+        target_x = target_pose.position.x
+        target_y = target_pose.position.y
+        
+        # Calculate the angle from robot to target
+        dx = target_x - robot_x
+        dy = target_y - robot_y
+        
+        # Calculate the target orientation
+        target_angle = np.arctan2(dy, dx)
+        
+        # Normalize angle to [-pi, pi]
+        target_angle = self.angle_diff(target_angle, 0)
+        
+        return target_angle
+
     def get_lookahead_point(self, current_pose):
         """ Get the lookahead point for Pure Pursuit algorithm. """
         if not self.current_path or not self.current_path.poses:
@@ -315,60 +355,32 @@ class AmclNode(Node):
         return self.current_path.poses[-1].pose
     
     def compute_control(self, current_pose, target_pose):
-        """ Compute control using Pure Pursuit algorithm. """
-        # Get robot position and orientation
-        robot_x = current_pose.position.x
-        robot_y = current_pose.position.y
-        q = current_pose.orientation
-        _, _, robot_heading = quat2euler([q.w, q.x, q.y, q.z])
+        """ Compute control using Pure Pursuit algorithm similar to follow_path. """
+        # 1) Calcula la posición del lookahead en coords del mapa:
+        x = current_pose.position.x
+        y = current_pose.position.y
+        dx_map = target_pose.position.x - x
+        dy_map = target_pose.position.y - y
         
-        # Get target position
-        target_x = target_pose.position.x
-        target_y = target_pose.position.y
-        
-        # Calculate lateral error (perpendicular distance to path)
-        # Transform target to robot's local coordinate system
-        dx = target_x - robot_x
-        dy = target_y - robot_y
-        
-        # Rotate to robot's local frame
-        cos_heading = np.cos(robot_heading)
-        sin_heading = np.sin(robot_heading)
-        
-        # Local coordinates in robot frame
-        local_x = dx * cos_heading + dy * sin_heading
-        local_y = -dx * sin_heading + dy * cos_heading
-        
-        # Lateral error is the y-coordinate in local frame
-        lateral_error = local_y
-        
-        # Use adaptive lookahead distance
-        lookahead_dist = self.calculate_adaptive_lookahead(current_pose)
-        
-        # Calculate curvature using Pure Pursuit formula
-        # curvature = 2 * lateral_error / (lookahead_distance^2)
-        if lookahead_dist < 0.01:  # Avoid division by zero
-            lookahead_dist = 0.01
-            
-        curvature = 2.0 * lateral_error / (lookahead_dist**2)
-        
-        # Apply gain and limit curvature
-        curvature *= self.pure_pursuit_gain
-        curvature = np.clip(curvature, -self.max_curvature, self.max_curvature)
-        
-        # Calculate angular velocity
-        angular_velocity = curvature * self.linear_velocity
-        
-        # Limit angular velocity
-        max_angular_speed = 0.3  # rad/s
-        angular_velocity = np.clip(angular_velocity, -max_angular_speed, max_angular_speed)
-        
-        # Create velocity command
-        cmd = Twist()
-        cmd.linear.x = self.linear_velocity
-        cmd.angular.z = angular_velocity
+        # 2) Transforma al sistema del robot (rotación inversa de yaw):
+        robot_yaw = self.get_yaw_from_pose(current_pose)
+        # R^T * [dx_map, dy_map]
+        x_r = math.cos(robot_yaw) * dx_map + math.sin(robot_yaw) * dy_map
+        y_r = -math.sin(robot_yaw) * dx_map + math.cos(robot_yaw) * dy_map
 
-         # === Limitación de curvatura para seguridad ===
+        # 3) Pure-Pursuit: curvatura
+        L = self.lookahead_distance
+        if abs(L) < 1e-6:
+            kappa = 0.0
+        else:
+            kappa = 2.0 * y_r / (L * L)
+
+        # 4) Genera el Twist
+        cmd = Twist()
+        cmd.linear.x = self.linear_velocity        # v_max
+        cmd.angular.z = self.linear_velocity * kappa
+
+        # 5) Limitación de curvatura para seguridad
         if abs(cmd.linear.x) > 1e-3:  # Evitar división por cero
             curvature = abs(cmd.angular.z / cmd.linear.x)
             if curvature > self.max_curvature:
@@ -378,12 +390,23 @@ class AmclNode(Node):
             
             # Garantizar velocidad mínima para evitar atorarse
             cmd.linear.x = max(cmd.linear.x, 0.05)
-        
-        # Debug logging
-        self.get_logger().info(f'Pure Pursuit - Lateral error: {lateral_error:.3f}m, Lookahead: {lookahead_dist:.3f}m, Curvature: {curvature:.3f}, Angular: {angular_velocity:.3f} rad/s')
-        
+
         return cmd
     
+    def get_yaw_from_pose(self, pose):
+        """
+        Extrae el ángulo yaw (rotación en Z) de una pose con orientación en cuaternión.
+        
+        Args:
+            pose: Objeto Pose con orientación en cuaternión
+            
+        Returns:
+            float: Ángulo yaw en radianes [-π, π]
+        """
+        quaternion = pose.orientation
+        yaw_angle = R.from_quat([quaternion.x, quaternion.y, quaternion.z, quaternion.w]).as_euler('zyx')[0]
+        return yaw_angle
+
     def detect_obstacle(self):
         """ Check if there is an obstacle in the way using the latest scan data. """
         if self.latest_scan is None:
@@ -508,7 +531,7 @@ class AmclNode(Node):
 
         current_odom_tf = self.get_odom_transform()
         if current_odom_tf is None:
-            if self.state in [State.NAVIGATING, State.AVOIDING_OBSTACLE]:
+            if self.state in [State.NAVIGATING, State.AVOIDING_OBSTACLE, State.INITIAL_POSITIONING]:
                 self.stop_robot()
             return
 
@@ -541,8 +564,45 @@ class AmclNode(Node):
             
             self.current_path = path
             self.publish_path(path)
-            self.state = State.NAVIGATING
+            
+            # Calculate target orientation for initial positioning
+            self.target_orientation = self.calculate_target_orientation(estimated_pose)
+            if self.target_orientation is not None:
+                self.get_logger().info(f"Path planned. Starting initial positioning to target orientation: {np.degrees(self.target_orientation):.2f}°")
+                self.state = State.INITIAL_POSITIONING
+            else:
+                self.get_logger().warn("Could not calculate target orientation. Starting navigation directly.")
+                self.state = State.NAVIGATING
             return
+            
+        elif self.state == State.INITIAL_POSITIONING:
+            if self.target_orientation is None:
+                self.get_logger().warn("Target orientation not set. Switching to NAVIGATING.")
+                self.state = State.NAVIGATING
+                return
+            
+            # Get current robot orientation
+            q = estimated_pose.orientation
+            _, _, current_yaw = quat2euler([q.w, q.x, q.y, q.z])
+            
+            # Calculate angle difference
+            angle_diff = self.angle_diff(self.target_orientation, current_yaw)
+            
+            # Check if we're close enough to target orientation
+            if abs(angle_diff) < self.initial_positioning_tolerance:
+                self.get_logger().info(f"Initial positioning complete. Current yaw: {np.degrees(current_yaw):.2f}°, Target: {np.degrees(self.target_orientation):.2f}°")
+                self.state = State.NAVIGATING
+                self.target_orientation = None
+                return
+            
+            # Rotate towards target orientation
+            twist = Twist()
+            twist.angular.z = self.initial_positioning_angular_speed * np.sign(angle_diff)
+            self.cmd_vel_pub.publish(twist)
+            
+            self.get_logger().info(f"Initial positioning - Current: {np.degrees(current_yaw):.2f}°, Target: {np.degrees(self.target_orientation):.2f}°, Diff: {np.degrees(angle_diff):.2f}°")
+            return
+            
         elif self.state == State.NAVIGATING:
             if self.detect_obstacle():
                 self.get_logger().info("Obstacle detected. Switching to AVOIDING_OBSTACLE state.")
@@ -604,17 +664,13 @@ class AmclNode(Node):
                     self.current_path = new_path
                     # 4. Publicar el nuevo path
                     self.publish_path(self.current_path)
+                    # 5. Recalculate target orientation for new path
+                    self.target_orientation = self.calculate_target_orientation(estimated_pose)
                     self.get_logger().info('Path replanned after obstacle avoidance.')
                 else:
                     self.get_logger().warn('Could not replan path after obstacle avoidance.')
                     # Check if there is still an obstacle in front
-        
-                    if new_path:
-                        self.current_path = new_path
-                        self.publish_path(self.current_path)
-                        self.get_logger().info('Path replanned after moving forward.')
-                    else:
-                        self.get_logger().warn('Still could not replan path after moving forward.')
+                    # For now, just continue with current path
                 
                 self.get_logger().info("Finished obstacle avoidance maneuver. Resuming navigation.")
                 self.state = State.NAVIGATING
@@ -637,6 +693,7 @@ class AmclNode(Node):
         self.state = State.IDLE
         self.initial_pose_received = True
         self.last_odom_pose = None # Reset odom tracking
+        self.target_orientation = None  # Reset target orientation
         self.stop_robot()
 
     def initialize_particles(self, initial_pose):

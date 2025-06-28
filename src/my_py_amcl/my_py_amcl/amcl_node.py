@@ -355,60 +355,32 @@ class AmclNode(Node):
         return self.current_path.poses[-1].pose
     
     def compute_control(self, current_pose, target_pose):
-        """ Compute control using Pure Pursuit algorithm. """
-        # Get robot position and orientation
-        robot_x = current_pose.position.x
-        robot_y = current_pose.position.y
+        """ Compute control using Pure Pursuit algorithm similar to follow_path. """
+        # 1) Calcula la posición del lookahead en coords del mapa:
+        x = current_pose.position.x
+        y = current_pose.position.y
+        dx_map = target_pose.position.x - x
+        dy_map = target_pose.position.y - y
+        
+        # 2) Transforma al sistema del robot (rotación inversa de yaw):
         q = current_pose.orientation
-        _, _, robot_heading = quat2euler([q.w, q.x, q.y, q.z])
-        
-        # Get target position
-        target_x = target_pose.position.x
-        target_y = target_pose.position.y
-        
-        # Calculate lateral error (perpendicular distance to path)
-        # Transform target to robot's local coordinate system
-        dx = target_x - robot_x
-        dy = target_y - robot_y
-        
-        # Rotate to robot's local frame
-        cos_heading = np.cos(robot_heading)
-        sin_heading = np.sin(robot_heading)
-        
-        # Local coordinates in robot frame
-        local_x = dx * cos_heading + dy * sin_heading
-        local_y = -dx * sin_heading + dy * cos_heading
-        
-        # Lateral error is the y-coordinate in local frame
-        lateral_error = local_y
-        
-        # Use adaptive lookahead distance
-        lookahead_dist = self.calculate_adaptive_lookahead(current_pose)
-        
-        # Calculate curvature using Pure Pursuit formula
-        # curvature = 2 * lateral_error / (lookahead_distance^2)
-        if lookahead_dist < 0.01:  # Avoid division by zero
-            lookahead_dist = 0.01
-            
-        curvature = 2.0 * lateral_error / (lookahead_dist**2)
-        
-        # Apply gain and limit curvature
-        curvature *= self.pure_pursuit_gain
-        curvature = np.clip(curvature, -self.max_curvature, self.max_curvature)
-        
-        # Calculate angular velocity
-        angular_velocity = curvature * self.linear_velocity
-        
-        # Limit angular velocity
-        max_angular_speed = 0.3  # rad/s
-        angular_velocity = np.clip(angular_velocity, -max_angular_speed, max_angular_speed)
-        
-        # Create velocity command
-        cmd = Twist()
-        cmd.linear.x = self.linear_velocity
-        cmd.angular.z = angular_velocity
+        robot_yaw = R.from_quat([q.x, q.y, q.z, q.w]).as_euler('zyx')[0]
+        x_r = math.cos(robot_yaw) * dx_map + math.sin(robot_yaw) * dy_map
+        y_r = -math.sin(robot_yaw) * dx_map + math.cos(robot_yaw) * dy_map
 
-         # === Limitación de curvatura para seguridad ===
+        # 3) Pure-Pursuit: curvatura
+        L = self.lookahead_distance
+        if abs(L) < 1e-6:
+            curvature = 0.0
+        else:
+            curvature = 2.0 * y_r / (L * L)
+
+        # 4) Genera el Twist
+        cmd = Twist()
+        cmd.linear.x = self.linear_velocity        # v_max
+        cmd.angular.z = self.linear_velocity * curvature
+
+        # 5) Limitación de curvatura para seguridad
         if abs(cmd.linear.x) > 1e-3:  # Evitar división por cero
             curvature = abs(cmd.angular.z / cmd.linear.x)
             if curvature > self.max_curvature:
@@ -418,12 +390,10 @@ class AmclNode(Node):
             
             # Garantizar velocidad mínima para evitar atorarse
             cmd.linear.x = max(cmd.linear.x, 0.05)
-        
-        # Debug logging
-        self.get_logger().info(f'Pure Pursuit - Lateral error: {lateral_error:.3f}m, Lookahead: {lookahead_dist:.3f}m, Curvature: {curvature:.3f}, Angular: {angular_velocity:.3f} rad/s')
-        
+
         return cmd
     
+
     def detect_obstacle(self):
         """ Check if there is an obstacle in the way using the latest scan data. """
         if self.latest_scan is None:

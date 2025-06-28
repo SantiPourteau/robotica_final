@@ -1,0 +1,31 @@
+[0.395s] Invoking command in '/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/src/my_py_amcl': CONDA_PROMPT_MODIFIER=(ros_env) PYTHONPATH=/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/prefix_override:/Users/Colegio/miniforge3/envs/ros_env/lib/python3.11/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/lib/python3.11/site-packages:${PYTHONPATH} SHLVL=2 _=/Users/Colegio/miniforge3/envs/ros_env/bin/env __CF_USER_TEXT_ENCODING=0x1F6:0x0:0x0 /Users/Colegio/miniforge3/envs/ros_env/bin/python3.11 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/my_py_amcl build --build-base /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/build install --record /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/install.log --single-version-externally-managed install_data
+[0.488s] /Users/Colegio/miniforge3/envs/ros_env/lib/python3.11/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'tests_require'
+[0.488s]   warnings.warn(msg)
+[0.537s] running egg_info
+[0.544s] writing ../../build/my_py_amcl/my_py_amcl.egg-info/PKG-INFO
+[0.546s] writing dependency_links to ../../build/my_py_amcl/my_py_amcl.egg-info/dependency_links.txt
+[0.546s] writing entry points to ../../build/my_py_amcl/my_py_amcl.egg-info/entry_points.txt
+[0.546s] writing requirements to ../../build/my_py_amcl/my_py_amcl.egg-info/requires.txt
+[0.546s] writing top-level names to ../../build/my_py_amcl/my_py_amcl.egg-info/top_level.txt
+[0.566s] reading manifest file '../../build/my_py_amcl/my_py_amcl.egg-info/SOURCES.txt'
+[0.566s] adding license file 'LICENSE'
+[0.567s] writing manifest file '../../build/my_py_amcl/my_py_amcl.egg-info/SOURCES.txt'
+[0.567s] running build
+[0.567s] running build_py
+[0.567s] copying my_py_amcl/jack_amcl.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/build/lib/my_py_amcl
+[0.569s] copying my_py_amcl/amcl_node.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/build/lib/my_py_amcl
+[0.570s] running install
+[0.573s] running install_lib
+[0.582s] copying /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/build/lib/my_py_amcl/amcl_node.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/lib/python3.11/site-packages/my_py_amcl
+[0.583s] byte-compiling /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/lib/python3.11/site-packages/my_py_amcl/amcl_node.py to amcl_node.cpython-311.pyc
+[0.588s] running install_data
+[0.588s] copying launch/amcl_maze.launch.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/share/my_py_amcl/launch
+[0.589s] copying rviz/amcl.rviz -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/share/my_py_amcl/rviz
+[0.590s] copying maps/merentiel.yaml -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/share/my_py_amcl/maps
+[0.590s] running install_egg_info
+[0.599s] removing '/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/lib/python3.11/site-packages/my_py_amcl-0.0.0-py3.11.egg-info' (and everything under it)
+[0.600s] Copying ../../build/my_py_amcl/my_py_amcl.egg-info to /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/lib/python3.11/site-packages/my_py_amcl-0.0.0-py3.11.egg-info
+[0.601s] running install_scripts
+[0.622s] Installing amcl_node script to /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/lib/my_py_amcl
+[0.623s] writing list of installed files to '/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/install.log'
+[0.636s] Invoked command in '/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/src/my_py_amcl' returned '0': CONDA_PROMPT_MODIFIER=(ros_env) PYTHONPATH=/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/prefix_override:/Users/Colegio/miniforge3/envs/ros_env/lib/python3.11/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/my_py_amcl/lib/python3.11/site-packages:${PYTHONPATH} SHLVL=2 _=/Users/Colegio/miniforge3/envs/ros_env/bin/env __CF_USER_TEXT_ENCODING=0x1F6:0x0:0x0 /Users/Colegio/miniforge3/envs/ros_env/bin/python3.11 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/my_py_amcl build --build-base /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/build install --record /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/my_py_amcl/install.log --single-version-externally-managed install_data
