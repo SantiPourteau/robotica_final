@@ -1,0 +1,2 @@
+[console_scripts]
+python_slam_node = turtlebot3_slam_mapper.python_slam_node:main

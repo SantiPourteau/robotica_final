@@ -1,0 +1,2 @@
+[console_scripts]
+amcl_node = my_py_amcl.amcl_node:main

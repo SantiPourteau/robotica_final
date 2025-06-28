@@ -1,0 +1,41 @@
+[1.271s] Invoking command in '/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/src/turtlebot3_slam_mapper': CONDA_PROMPT_MODIFIER=(ros_env) PYTHONPATH=/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/prefix_override:/Users/Colegio/miniforge3/envs/ros_env/lib/python3.11/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/python3.11/site-packages:${PYTHONPATH} SHLVL=2 _=/Users/Colegio/miniforge3/envs/ros_env/bin/env __CF_USER_TEXT_ENCODING=0x1F6:0x0:0x0 /Users/Colegio/miniforge3/envs/ros_env/bin/python3.11 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/turtlebot3_slam_mapper build --build-base /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/build install --record /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/install.log --single-version-externally-managed install_data
+[1.363s] /Users/Colegio/miniforge3/envs/ros_env/lib/python3.11/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'tests_require'
+[1.363s]   warnings.warn(msg)
+[1.411s] running egg_info
+[1.419s] creating ../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info
+[1.419s] writing ../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info/PKG-INFO
+[1.420s] writing dependency_links to ../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info/dependency_links.txt
+[1.420s] writing entry points to ../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info/entry_points.txt
+[1.420s] writing requirements to ../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info/requires.txt
+[1.420s] writing top-level names to ../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info/top_level.txt
+[1.420s] writing manifest file '../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info/SOURCES.txt'
+[1.436s] reading manifest file '../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info/SOURCES.txt'
+[1.436s] writing manifest file '../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info/SOURCES.txt'
+[1.436s] running build
+[1.437s] running build_py
+[1.437s] creating /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/build/lib/turtlebot3_slam_mapper
+[1.437s] copying turtlebot3_slam_mapper/__init__.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/build/lib/turtlebot3_slam_mapper
+[1.437s] copying turtlebot3_slam_mapper/python_slam_node.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/build/lib/turtlebot3_slam_mapper
+[1.438s] running install
+[1.441s] running install_lib
+[1.448s] creating /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/python3.11/site-packages/turtlebot3_slam_mapper
+[1.449s] copying /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/build/lib/turtlebot3_slam_mapper/__init__.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/python3.11/site-packages/turtlebot3_slam_mapper
+[1.449s] copying /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/build/lib/turtlebot3_slam_mapper/python_slam_node.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/python3.11/site-packages/turtlebot3_slam_mapper
+[1.449s] byte-compiling /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/python3.11/site-packages/turtlebot3_slam_mapper/__init__.py to __init__.cpython-311.pyc
+[1.449s] byte-compiling /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/python3.11/site-packages/turtlebot3_slam_mapper/python_slam_node.py to python_slam_node.cpython-311.pyc
+[1.451s] running install_data
+[1.451s] creating /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/ament_index/resource_index/packages
+[1.451s] copying resource/turtlebot3_slam_mapper -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/ament_index/resource_index/packages
+[1.452s] copying package.xml -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/turtlebot3_slam_mapper
+[1.452s] creating /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/turtlebot3_slam_mapper/launch
+[1.452s] copying launch/python_slam_maze.launch.py -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/turtlebot3_slam_mapper/launch
+[1.452s] creating /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/turtlebot3_slam_mapper/rviz
+[1.452s] copying rviz/slam_maze.rviz -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/turtlebot3_slam_mapper/rviz
+[1.453s] creating /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/turtlebot3_slam_mapper/config
+[1.453s] copying config/slam_toolbox_params.yaml -> /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/share/turtlebot3_slam_mapper/config
+[1.453s] running install_egg_info
+[1.462s] Copying ../../build/turtlebot3_slam_mapper/turtlebot3_slam_mapper.egg-info to /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/python3.11/site-packages/turtlebot3_slam_mapper-0.0.0-py3.11.egg-info
+[1.463s] running install_scripts
+[1.479s] Installing python_slam_node script to /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/turtlebot3_slam_mapper
+[1.479s] writing list of installed files to '/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/install.log'
+[1.491s] Invoked command in '/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/src/turtlebot3_slam_mapper' returned '0': CONDA_PROMPT_MODIFIER=(ros_env) PYTHONPATH=/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/prefix_override:/Users/Colegio/miniforge3/envs/ros_env/lib/python3.11/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/install/turtlebot3_slam_mapper/lib/python3.11/site-packages:${PYTHONPATH} SHLVL=2 _=/Users/Colegio/miniforge3/envs/ros_env/bin/env __CF_USER_TEXT_ENCODING=0x1F6:0x0:0x0 /Users/Colegio/miniforge3/envs/ros_env/bin/python3.11 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/turtlebot3_slam_mapper build --build-base /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/build install --record /Users/Colegio/miniforge3/envs/ros_env/share/turtlebot3_gazebo/pra_ws/build/turtlebot3_slam_mapper/install.log --single-version-externally-managed install_data
