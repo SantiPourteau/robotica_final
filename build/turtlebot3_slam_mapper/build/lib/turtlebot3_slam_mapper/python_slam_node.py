@@ -35,9 +35,9 @@ class PythonSlamNode(Node):
 
         # OK TODO: define map resolution, width, height, and number of particles
         self.declare_parameter('map_resolution', 0.05)  # metros por celda
-        self.declare_parameter('map_width_meters', 20.0)  # ancho en metros
-        self.declare_parameter('map_height_meters', 20.0)  # alto en metros
-        self.declare_parameter('num_particles', 100)  # número de partículas
+        self.declare_parameter('map_width_meters', 10.0)  # ancho en metros
+        self.declare_parameter('map_height_meters', 10.0)  # alto en metros
+        self.declare_parameter('num_particles', 50)  # número de partículas
 
         self.resolution = self.get_parameter('map_resolution').get_parameter_value().double_value
         self.map_width_m = self.get_parameter('map_width_meters').get_parameter_value().double_value

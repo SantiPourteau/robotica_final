@@ -355,7 +355,7 @@ class AmclNode(Node):
         return self.current_path.poses[-1].pose
     
     def compute_control(self, current_pose, target_pose):
-        """ Compute control using Pure Pursuit algorithm. """
+        """ Compute control using Pure Pursuit algorithm similar to follow_path. """
         # 1) Calcula la posición del lookahead en coords del mapa:
         x = current_pose.position.x
         y = current_pose.position.y
@@ -380,15 +380,15 @@ class AmclNode(Node):
         cmd.linear.x = self.linear_velocity        # v_max
         cmd.angular.z = self.linear_velocity * curvature
 
-        # 5) Limitación de curvatura 
-        if abs(cmd.linear.x) > 1e-3:  
+        # 5) Limitación de curvatura para seguridad
+        if abs(cmd.linear.x) > 1e-3:  # Evitar división por cero
             curvature = abs(cmd.angular.z / cmd.linear.x)
             if curvature > self.max_curvature:
-                
+                # Escalar velocidad para respetar curvatura máxima
                 scale_factor = self.max_curvature / curvature
                 cmd.linear.x *= scale_factor
             
-
+            # Garantizar velocidad mínima para evitar atorarse
             cmd.linear.x = max(cmd.linear.x, 0.05)
 
         return cmd
