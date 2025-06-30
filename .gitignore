@@ -1,0 +1,13 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+
+# And not the src directory
+!src/
+
+# But ignore everything in src except the specified Python files
+src/*
+!src/python_slam_node.py
+!src/amcl_node.py

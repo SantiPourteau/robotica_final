@@ -363,22 +363,22 @@ class AmclNode(Node):
         dy_map = target_pose.position.y - y
         
         # 2) Transforma al sistema del robot (rotación inversa de yaw):
-        robot_yaw = self.get_yaw_from_pose(current_pose)
-        # R^T * [dx_map, dy_map]
+        q = current_pose.orientation
+        robot_yaw = R.from_quat([q.x, q.y, q.z, q.w]).as_euler('zyx')[0]
         x_r = math.cos(robot_yaw) * dx_map + math.sin(robot_yaw) * dy_map
         y_r = -math.sin(robot_yaw) * dx_map + math.cos(robot_yaw) * dy_map
 
         # 3) Pure-Pursuit: curvatura
         L = self.lookahead_distance
         if abs(L) < 1e-6:
-            kappa = 0.0
+            curvature = 0.0
         else:
-            kappa = 2.0 * y_r / (L * L)
+            curvature = 2.0 * y_r / (L * L)
 
         # 4) Genera el Twist
         cmd = Twist()
         cmd.linear.x = self.linear_velocity        # v_max
-        cmd.angular.z = self.linear_velocity * kappa
+        cmd.angular.z = self.linear_velocity * curvature
 
         # 5) Limitación de curvatura para seguridad
         if abs(cmd.linear.x) > 1e-3:  # Evitar división por cero
@@ -393,19 +393,6 @@ class AmclNode(Node):
 
         return cmd
     
-    def get_yaw_from_pose(self, pose):
-        """
-        Extrae el ángulo yaw (rotación en Z) de una pose con orientación en cuaternión.
-        
-        Args:
-            pose: Objeto Pose con orientación en cuaternión
-            
-        Returns:
-            float: Ángulo yaw en radianes [-π, π]
-        """
-        quaternion = pose.orientation
-        yaw_angle = R.from_quat([quaternion.x, quaternion.y, quaternion.z, quaternion.w]).as_euler('zyx')[0]
-        return yaw_angle
 
     def detect_obstacle(self):
         """ Check if there is an obstacle in the way using the latest scan data. """
